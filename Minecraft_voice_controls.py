@@ -4,11 +4,9 @@ import keyboard
 
 r = sr.Recognizer()
 mic = sr.Microphone(0, sample_rate=48000)
-
 sending = False
 mouseLeft = False
 mouseRight = False
-
 dict = {  
     "forward": {
         "key": "w",
@@ -44,13 +42,29 @@ dict = {
     },
 }
 
+def is_valid_command(command):
+    """
+    Check if the command is valid by verifying it contains recognizable keywords.
+    
+    Valid commands include:
+    - Movement commands (forward, backward, left, right)
+    - Look commands (look up, look down, look left, look right)
+    - Mouse commands (mouse left, mouse right, mouse wheel)
+    - Action commands (jump, sprint, sneak, inventory)
+    - Modifiers like 'once' or 'stop'
+    """
+    valid_keywords = list(dict.keys()) + [
+        "look", "up", "down", "left", "right", 
+        "mouse", "wheel", "once", "stop"
+    ]
+    
+    # Check if any valid keyword is in the command
+    return any(keyword in command.lower() for keyword in valid_keywords)
 
 def parse_command(command):
     print("Command: " + command)
-
     global mouseLeft
     global mouseRight
-
     if "look" in command:
         if "up" in command:
             pyautogui.move(0, -5, 2)
@@ -61,7 +75,6 @@ def parse_command(command):
         if "left" in command:
             pyautogui.move(-5, 0, 2)
         return
-
     if "mouse" in command:
         if "wheel" in command:
             pyautogui.scroll(1)
@@ -82,7 +95,7 @@ def parse_command(command):
             else:
                 mouseRight = True
             return
-        
+       
     for k in dict.keys():
         if k in command:
             if "once" in command:
@@ -93,26 +106,42 @@ def parse_command(command):
             else:
                 dict[k]["held"] = True
             return
-        
-
+       
 def listen_command():
     global sending
     try:
         sending = True
         with mic as source:
+            print("Listening for a command...")
             audio = r.listen(source)
-
+        
+        # Recognize the speech
+        try:
+            command = r.recognize_google(audio)
+            
+            # Validate the command
+            if is_valid_command(command):
+                print("✅ Valid command received!")
+                parse_command(command)
+            else:
+                print("❌ Invalid command. Please try again.")
+                print("Tip: Try commands like 'forward', 'look up', 'mouse left', etc.")
+                listen_command()  # Recursively call to get a valid command
+        
+        except sr.UnknownValueError:
+            print("❌ Could not understand audio. Please try again.")
+            listen_command()  # Recursively call to get a valid command
+        
         sending = False
-        parse_command(r.recognize_google(audio))
+    
     except Exception as e:
-        print(e)
-        senidng = False
-
+        print(f"An error occurred: {e}")
+        sending = False
 
 while True:
     if mouseLeft:
         pyautogui.mouseDown(button='left')
-    if mouseRight: 
+    if mouseRight:
         pyautogui.mouseDown(button='right')
     if not sending:
         listen_command()
@@ -121,5 +150,3 @@ while True:
     for k in dict.keys():
         if dict[k]["held"]:
             pyautogui.keyDown(dict[k]["key"])
-
-    
