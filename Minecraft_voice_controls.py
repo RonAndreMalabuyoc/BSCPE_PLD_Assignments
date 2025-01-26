@@ -3,7 +3,7 @@ import pyautogui
 import keyboard
 import pyttsx3
 
-engine = engine = pyttsx3.init()
+engine = pyttsx3.init()
 r = sr.Recognizer()
 mic = sr.Microphone(0, sample_rate=48000)
 sending = False
@@ -70,42 +70,64 @@ def parse_command(command):
     if "look" in command:
         if "up" in command:
             print("Going Up")
+            engine.say("Looking up")
+            engine.runAndWait()
             pyautogui.move(0, -5, 2)
         if "right" in command:
             print("Going Right")
+            engine.say("Looking right")
+            engine.runAndWait()
             pyautogui.move(5, 0, 2)
         if "down" in command:
             print("Going Down")
+            engine.say("Looking down")
+            engine.runAndWait()
             pyautogui.move(0, 5, 2)
         if "left" in command:
             print("Going Left")
+            engine.say("Looking left")
+            engine.runAndWait()
             pyautogui.move(-5, 0, 2)
         return
     if "mouse" in command:
         if "wheel" in command:
             print("Scrolling Mouse Wheel")
+            engine.say("Scrolling mouse wheel")
+            engine.runAndWait()
             pyautogui.scroll(1)
             return
         if "left" in command:
             if "once" in command:
                 print("Clicking Left Mouse")
+                engine.say("Clicking left mouse")
+                engine.runAndWait()
                 pyautogui.mouseDown(button='left')
             elif "stop" in command:
                 print("Stopping Left Mouse")
+                engine.say("Stopping left mouse")
+                engine.runAndWait()
                 mouseLeft = False
             else:
                 print("Holding Left Mouse")
+                engine.say("Holding left mouse")
+                engine.runAndWait()
                 mouseLeft = True
                 return
         if "right" in command:
             if "once" in command:
                 print("Clicking Right Mouse")
+                engine.say("Clicking right mouse")
+                engine.runAndWait()
                 pyautogui.mouseDown(button='right')
             elif "stop" in command:
                 print("Stopping Right Mouse")
+                engine.say("Stopping right mouse")
+                engine.runAndWait()
                 mouseRight = False
             else:
                 print("Holding Right Mouse")
+                engine.say("Holding right mouse")
+                engine.runAndWait()
                 mouseRight = True
             return
        
@@ -113,13 +135,19 @@ def parse_command(command):
         if k in command:
             if "once" in command:
                 print(f"Going {k.capitalize()}")
+                engine.say(f"{k}")
+                engine.runAndWait()
                 pyautogui.press(dict[k]["key"])
             elif "stop" in command:
                 print(f"Stopping {k.capitalize()}")
+                engine.say(f"Stopping {k}")
+                engine.runAndWait()
                 dict[k]["held"] = False
                 pyautogui.keyUp(dict[k]["key"])
             else:
                 print(f"Holding {k.capitalize()}")
+                engine.say(f"Holding {k}")
+                engine.runAndWait()
                 dict[k]["held"] = True
             return
        
@@ -139,11 +167,15 @@ def listen_command():
                 print("✅ Valid command received!")
                 parse_command(command)
             else:
-                print("❌ Invalid command. Please try again.")
+                print("❌ Invalid command. Try again.")
+                engine.say("Invalid command. Try again.")
+                engine.runAndWait()
                 print("Tip: Try commands like 'forward', 'look up', 'mouse left', etc.")
                 listen_command()  
         except sr.UnknownValueError:
             print("❌ Could not understand audio. Please try again.")
+            engine.say("Could not understand. Try again.")
+            engine.runAndWait()
             listen_command()  
         
         sending = False
@@ -164,3 +196,5 @@ while True:
     for k in dict.keys():
         if dict[k]["held"]:
             pyautogui.keyDown(dict[k]["key"])
+
+        
