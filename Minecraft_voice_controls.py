@@ -1,7 +1,9 @@
 import speech_recognition as sr
 import pyautogui
 import keyboard
+import pyttsx3
 
+engine = engine = pyttsx3.init()
 r = sr.Recognizer()
 mic = sr.Microphone(0, sample_rate=48000)
 sending = False
@@ -67,43 +69,57 @@ def parse_command(command):
     global mouseRight
     if "look" in command:
         if "up" in command:
+            print("Going Up")
             pyautogui.move(0, -5, 2)
         if "right" in command:
+            print("Going Right")
             pyautogui.move(5, 0, 2)
         if "down" in command:
+            print("Going Down")
             pyautogui.move(0, 5, 2)
         if "left" in command:
+            print("Going Left")
             pyautogui.move(-5, 0, 2)
         return
     if "mouse" in command:
         if "wheel" in command:
+            print("Scrolling Mouse Wheel")
             pyautogui.scroll(1)
             return
         if "left" in command:
             if "once" in command:
+                print("Clicking Left Mouse")
                 pyautogui.mouseDown(button='left')
             elif "stop" in command:
+                print("Stopping Left Mouse")
                 mouseLeft = False
             else:
+                print("Holding Left Mouse")
                 mouseLeft = True
                 return
         if "right" in command:
             if "once" in command:
+                print("Clicking Right Mouse")
                 pyautogui.mouseDown(button='right')
             elif "stop" in command:
+                print("Stopping Right Mouse")
                 mouseRight = False
             else:
+                print("Holding Right Mouse")
                 mouseRight = True
             return
        
     for k in dict.keys():
         if k in command:
             if "once" in command:
+                print(f"Going {k.capitalize()}")
                 pyautogui.press(dict[k]["key"])
             elif "stop" in command:
+                print(f"Stopping {k.capitalize()}")
                 dict[k]["held"] = False
                 pyautogui.keyUp(dict[k]["key"])
             else:
+                print(f"Holding {k.capitalize()}")
                 dict[k]["held"] = True
             return
        
@@ -113,24 +129,22 @@ def listen_command():
         sending = True
         with mic as source:
             print("Listening for a command...")
+            engine.say("Get me a box of captain crunch you useless fuck")
+            engine.runAndWait()
             audio = r.listen(source)
-        
-        # Recognize the speech
         try:
             command = r.recognize_google(audio)
             
-            # Validate the command
             if is_valid_command(command):
                 print("✅ Valid command received!")
                 parse_command(command)
             else:
                 print("❌ Invalid command. Please try again.")
                 print("Tip: Try commands like 'forward', 'look up', 'mouse left', etc.")
-                listen_command()  # Recursively call to get a valid command
-        
+                listen_command()  
         except sr.UnknownValueError:
             print("❌ Could not understand audio. Please try again.")
-            listen_command()  # Recursively call to get a valid command
+            listen_command()  
         
         sending = False
     
