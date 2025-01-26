@@ -129,7 +129,7 @@ def listen_command():
         sending = True
         with mic as source:
             print("Listening for a command...")
-            engine.say("Get me a box of captain crunch you useless fuck")
+            engine.say("My ears are active")
             engine.runAndWait()
             audio = r.listen(source)
         try:
