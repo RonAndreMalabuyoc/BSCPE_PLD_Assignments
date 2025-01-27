@@ -45,22 +45,11 @@ dict = {
 }
 
 def is_valid_command(command):
-    """
-    Check if the command is valid by verifying it contains recognizable keywords.
-    
-    Valid commands include:
-    - Movement commands (forward, backward, left, right)
-    - Look commands (look up, look down, look left, look right)
-    - Mouse commands (mouse left, mouse right, mouse wheel)
-    - Action commands (jump, sprint, sneak, inventory)
-    - Modifiers like 'once' or 'stop'
-    """
     valid_keywords = list(dict.keys()) + [
         "look", "up", "down", "left", "right", 
         "mouse", "wheel", "once", "stop"
     ]
     
-    # Check if any valid keyword is in the command
     return any(keyword in command.lower() for keyword in valid_keywords)
 
 def parse_command(command):
@@ -92,41 +81,41 @@ def parse_command(command):
     if "mouse" in command:
         if "wheel" in command:
             print("Scrolling Mouse Wheel")
-            engine.say("Scrolling mouse wheel")
+            engine.say("Scrolling hotbar")
             engine.runAndWait()
             pyautogui.scroll(1)
             return
         if "left" in command:
             if "once" in command:
                 print("Clicking Left Mouse")
-                engine.say("Clicking left mouse")
+                engine.say("Punch")
                 engine.runAndWait()
                 pyautogui.mouseDown(button='left')
             elif "stop" in command:
                 print("Stopping Left Mouse")
-                engine.say("Stopping left mouse")
+                engine.say("No more violence")
                 engine.runAndWait()
                 mouseLeft = False
             else:
                 print("Holding Left Mouse")
-                engine.say("Holding left mouse")
+                engine.say("Punching")
                 engine.runAndWait()
                 mouseLeft = True
                 return
         if "right" in command:
             if "once" in command:
                 print("Clicking Right Mouse")
-                engine.say("Clicking right mouse")
+                engine.say("Interact")
                 engine.runAndWait()
                 pyautogui.mouseDown(button='right')
             elif "stop" in command:
                 print("Stopping Right Mouse")
-                engine.say("Stopping right mouse")
+                engine.say("No more touching")
                 engine.runAndWait()
                 mouseRight = False
             else:
                 print("Holding Right Mouse")
-                engine.say("Holding right mouse")
+                engine.say("Interacting")
                 engine.runAndWait()
                 mouseRight = True
             return
